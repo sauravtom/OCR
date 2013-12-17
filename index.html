@@ -6,12 +6,9 @@
         <meta charset="utf-8">  
         <script src="jquery-latest.min.js"></script>
         <style>
-            #Canvas0,#Canvas1,#Canvas2{
+            canvas{
               border:2px solid;
               //position:fixed;
-            }
-            #Canvas1{
-              z-index:+1;
             }
         </style> 
     </head>
@@ -20,7 +17,13 @@
         <canvas id="Canvas0" width="100" height="100"></canvas> 
         <canvas id="Canvas1" width="100" height="100"></canvas>
         <canvas id="Canvas2" width="100" height="100"></canvas>
-        <div id='foo'></div> 
+        <canvas id="Canvas3" width="100" height="100"></canvas>
+        <canvas id="Canvas4" width="100" height="100"></canvas>
+        <div id='foo'></div>
+        <button id='anal'>Analyze</button>
+        <button id='clear'>Clear</button> 
+        <button id='compare'>Compare</button> 
+
         <script>
             var canvas0 = document.getElementById("Canvas0");  
             var ctx0 = canvas0.getContext("2d");
@@ -31,25 +34,135 @@
             var canvas2 = document.getElementById("Canvas2");  
             var ctx2 = canvas2.getContext("2d");
 
-            var image = new Image();  
-            image.src = "a.jpg";
-            
+            var canvas3 = document.getElementById("Canvas3");  
+            var ctx3 = canvas3.getContext("2d");
 
-            function create_test_cases(context){
+            var canvas4 = document.getElementById("Canvas4");  
+            var ctx4 = canvas4.getContext("2d");
+
+            var image = new Image();
+            image.src = "a.jpg";
+
+            var matrix0=[],matrix1=[];
+
+            draw_char(ctx0,'E');
+            matrix0 = analyze(ctx0);
+            draw_matrix(ctx1,matrix0);
+
+            init_board(canvas2,'#ddd');
+            //matrix = analyze(ctx0);
+            //draw_matrix(ctx1,matrix);
+
+
+            $('#anal').click(function () {
+                matrix1 = analyze(ctx2);
+                draw_matrix(ctx3,matrix1);
+            });
+            $('#clear').click(function () {
+                ctx0.clearRect ( 0,0,100,100 );
+                ctx1.clearRect ( 0,0,100,100 );
+                ctx2.clearRect ( 0,0,100,100 );
+                ctx3.clearRect ( 0,0,100,100 );
+            });
+            $('#compare').click(function () {
+                var total=0,good=0;
+                matrix1 = analyze(ctx2);
+                matrix0 = analyze(ctx0);
+                matrix4=[];
+                for(i=0;i<10;i++){
+                    matrix4[i] = [ 0,0,0,0,0,0,0,0,0,0 ];
+                }
+                for(x=0;x<10;x++){
+                    for(y=0;y<10;y++){
+                        //diff += Math.abs( matrix1[x][y] - matrix0[x][y] );
+                        if (matrix0[x][y] == 1){
+                            total++;
+                            if(matrix1[x][y] == matrix0[x][y]){
+                                good++;
+                                matrix4[x][y] = 1;
+                            }
+                        }
+                    }
+                }
+                //document.write(matrix4);
+                draw_matrix(ctx4,matrix4);
+                console.log(good/total);
+            });
+
+            function init_board(canvas, fillColor) {
+                    width =100;
+                    height = 100;
+                    var radius = 10; // or whatever
+
+                    var ctx = canvas.getContext("2d");
+                    // define a custom fillCircle method
+                    ctx.fillCircle = function(x, y, radius, fillColor) {
+                        this.fillStyle = fillColor;
+                        this.beginPath();
+                        this.moveTo(x, y);
+                        this.arc(x, y, radius, 0, Math.PI * 2, false);
+                        this.fill();
+                    };
+                    ctx.clearTo = function(fillColor) {
+                        ctx.fillStyle = fillColor;
+                        //ctx.fillRect(0, 0, width, height);
+                    };
+                    ctx.clearTo(fillColor || "#ddd");
+
+                    // bind mouse events
+                    canvas.onmousemove = function(e) {
+                        if (!canvas.isDrawing) {
+                           return;
+                        }
+                        var x = e.pageX - this.offsetLeft;
+                        var y = e.pageY - this.offsetTop;
+                        
+                        var fillColor = '#ff0000';
+                        ctx.fillCircle(x, y, radius, fillColor);
+                    };
+                    canvas.onmousedown = function(e) {
+                        canvas.isDrawing = true;
+                    };
+                    canvas.onmouseup = function(e) {
+                        canvas.isDrawing = false;
+                    };
+                }
+
+            function draw_char(context,ch){
                 context.font = '120px Arial';
                 //ctx2.fillText('H', 100, 100);
-                context.fillText("S", 10, 90);
+                context.fillText(ch, 10, 90);
             }
 
+            function draw_matrix(context,matrix){
+                for(i=0;i<10;i++){
+                    for(j=0;j<10;j++){
+                        if(matrix[i][j] == 1){
+                            context.fillStyle="#FF0000";
+                            context.fillRect(i*10,j*10,10,10);
+                            context.stroke();
+                        }
+                    }
+                    //document.write(matrix[i][0]);
+                }
+
+                for (x =0;x<200;x=x+10){
+                    context.strokeStyle="rgb(0,0,0)";
+                    context.fillStyle = "rgb(200,10,0)";
+                    context.lineWidth=1;
+                    context.beginPath();
+                    context.moveTo(0,x);
+                    context.lineTo(200,x);
+                    context.stroke();
+                    context.moveTo(x,0);
+                    context.lineTo(x,200);
+                    context.stroke();
+                }
+            }
+
+            // returns a matrix representing position of pixels
             function analyze(context){
-                
-            }
-
-            $(image).load(function(){
-                analyze(ctx2);
-
-                ctx0.drawImage(image, 0, 0,100,100);
-                var x,y,p,matrix=[];
+                var x,y,p,i,matrix=[];
 
                 for(i=0;i<10;i++){
                     matrix[i] = [ 0,0,0,0,0,0,0,0,0,0 ];
@@ -57,52 +170,21 @@
 
                 for(x=0;x<100;x=x+10){
                     for(y=0;y<100;y=y+10){
-                        p = ctx0.getImageData(x, y, 1, 1).data;
-                        try {
-                            if (p[0] < 10){ matrix[ parseInt(x/10) ][ parseInt(y/10) ] = 1; }  
-                        }   
-                        catch(e){
-                            console.log(e)
-                        }    
+                        p = context.getImageData(x, y, 1, 1).data;
+                        //if (p[0] < 50){ matrix[ parseInt(x/10) ][ parseInt(y/10) ] = 1; }
+                        if (p[3] > 50){ matrix[ parseInt(x/10) ][ parseInt(y/10) ] = 1; }  
                         //document.write(matrix);            
-                        //console.log(p[0] + " " + p[1] + ' '+' '+p[2]+' ' +p[3] +';\n');        
+                        console.log(p[0] + " " + p[1] + ' '+' '+p[2]+' ' +p[3] +';\n');        
                     }
                 }
-
-                //document.getElementById('foo').innerHTML = matrix;
-                for(i=0;i<10;i++){
-                    for(j=0;j<10;j++){
-                        if(matrix[i][j] == 1){
-                            ctx1.fillStyle="#FF0000";
-                            ctx1.fillRect(i*10,j*10,10,10);
-                            ctx1.stroke();
-                        }
-                    }
-                    //document.write(matrix[i][0]);
-                    //document.getElementById('foo').innerHTML += matrix[i] + ' . ';
-                }
-
-            });
-            
-            //ctx2.fillRect(0,0,100,100);
-            
-            // Drawing a mesh on ctx1
-            for (x =0;x<200;x=x+10){
-                ctx1.strokeStyle="rgb(0,0,0)";
-                ctx1.fillStyle = "rgb(200,10,0)";
-                //ctx1.fillRect (0, 0, 525, 250);
-                ctx1.lineWidth=1;
-                ctx1.beginPath();
-                ctx1.moveTo(0,x);
-                ctx1.lineTo(200,x);
-                //ctx1.stroke();
-                ctx1.moveTo(x,0);
-                ctx1.lineTo(x,200);
-                //ctx1.stroke();
+                return matrix;
             }
 
-            
-
+            $(image).load(function(){
+                //draw_char(ctx0,'E');
+                //matrix = analyze(ctx0);
+                //draw_matrix(ctx1,matrix);
+            });
             
         </script>
     </body>  
