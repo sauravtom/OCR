@@ -45,7 +45,7 @@
 
             var matrix0=[],matrix1=[];
 
-            draw_char(ctx0,'V');
+            draw_char(ctx0,'E');
             matrix0 = analyze(ctx0);
             draw_matrix(ctx1,matrix0);
 
@@ -55,27 +55,11 @@
 
 
             $('#anal').click(function () {
-                ctx0.clearRect ( 0,0,100,100 );
-                arr2=[];
-                var c,max=0;
-                matrix = [];
                 matrix1 = analyze(ctx2);
                 draw_matrix(ctx3,matrix1);
-                a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxxyz123456789';
-                arr = a.split('');
-                for(i=0;i<arr.length;i++){
-                    draw_char(ctx0,arr[i]);
-                    matrix = analyze(ctx0);
-                    ctx0.clearRect ( 0,0,100,100 );
-                    a = compare(matrix,matrix1);
-                    if(a > max){max = a; c = arr[i][0]; };
-                    arr2.push(arr[i] , a );
-                }
-                console.log(arr2);
-                alert(c);
             });
             $('#clear').click(function () {
-                
+                ctx0.clearRect ( 0,0,100,100 );
                 ctx1.clearRect ( 0,0,100,100 );
                 ctx2.clearRect ( 0,0,100,100 );
                 ctx3.clearRect ( 0,0,100,100 );
@@ -88,32 +72,22 @@
                 for(i=0;i<10;i++){
                     matrix4[i] = [ 0,0,0,0,0,0,0,0,0,0 ];
                 }
-                result = compare(matrix0,matrix1);
-                console.log(result);
-            });
-
-            function compare(testmatrix,usermatrix){
-                var x,y,good=0,total=0,total2=0,good2=0;
-
                 for(x=0;x<10;x++){
                     for(y=0;y<10;y++){
                         //diff += Math.abs( matrix1[x][y] - matrix0[x][y] );
-                        if (testmatrix[x][y] == 1){
+                        if (matrix0[x][y] == 1){
                             total++;
-                            if(usermatrix[x][y] == 1){
+                            if(matrix1[x][y] == matrix0[x][y]){
                                 good++;
-                            }
-                        }
-                        if (usermatrix[x][y] == 1){
-                            total2++;
-                            if(testmatrix[x][y] == 1){
-                                good2++;
+                                matrix4[x][y] = 1;
                             }
                         }
                     }
                 }
-                return (good/total)*(good2/total2);
-            }
+                //document.write(matrix4);
+                draw_matrix(ctx4,matrix4);
+                console.log(good/total);
+            });
 
             function init_board(canvas, fillColor) {
                     width =100;
@@ -155,10 +129,9 @@
                 }
 
             function draw_char(context,ch){
-                context.font = 'bolder 120px Arial';
-                context.textAlign = 'center';
+                context.font = '120px Arial';
                 //ctx2.fillText('H', 100, 100);
-                context.fillText(ch,50,90);
+                context.fillText(ch, 10, 90);
             }
 
             function draw_matrix(context,matrix){
