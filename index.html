@@ -15,7 +15,7 @@
               margin: 20px;
             }
             #Canvas0,#Canvas1,#Canvas3,#Canvas4,#compare{
-                display:none;
+                //display:none;
             }
             .container{
                 text-align: center;
@@ -203,7 +203,7 @@
                     //document.write(matrix[i][0]);
                 }
 
-                for (x =0;x<200;x=x+10){
+                for (x =0;x<100;x=x+10){
                     context.strokeStyle="rgb(0,0,0)";
                     context.fillStyle = "rgb(200,10,0)";
                     context.lineWidth=1;
@@ -221,12 +221,15 @@
             function analyze(context){
                 var x,y,p,i,matrix=[];
 
-                for(i=0;i<10;i++){
-                    matrix[i] = [ 0,0,0,0,0,0,0,0,0,0 ];
+                for(i=0;i<100;i++){
+                    matrix[i] =[];
+                    for(j=0;j<100;j++){
+                        matrix[i].push(0)
+                    }
                 }
 
-                for(x=0;x<100;x=x+10){
-                    for(y=0;y<100;y=y+10){
+                for(x=0;x<100;x++){
+                    for(y=0;y<100;y++){
                         p = context.getImageData(x, y, 1, 1).data;
                         //if (p[0] < 50){ matrix[ parseInt(x/10) ][ parseInt(y/10) ] = 1; }
                         if (p[3] > 50){ matrix[ parseInt(x/10) ][ parseInt(y/10) ] = 1; }  
