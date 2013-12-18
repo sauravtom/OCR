@@ -1,54 +1,28 @@
 <!DOCTYPE html>  
   
 <html>  
-    <head>
+    <head>  
         <title>Canvas from scratch</title>  
         <meta charset="utf-8">  
         <script src="jquery-latest.min.js"></script>
         <style>
-            body{
-                font-family: monospace;
-            }
             canvas{
               border:2px solid;
               //position:fixed;
-              margin: 20px;
             }
-            #Canvas0,#Canvas1,#Canvas3,#Canvas4,#compare{
-                display:none;
-            }
-            .container{
-                text-align: center;
-                //background: blue;
-                width:100%;
-                //padding-top: 10px;
-            }
-            #result{
-                text-align: center;
-                //background: grey;
-                padding-top: 30px; 
-                width:100%;
-                height:100px;
-            }
-        </style>
+        </style> 
     </head>
-
+  
     <body>
         <canvas id="Canvas0" width="100" height="100"></canvas> 
         <canvas id="Canvas1" width="100" height="100"></canvas>
-        
+        <canvas id="Canvas2" width="100" height="100"></canvas>
         <canvas id="Canvas3" width="100" height="100"></canvas>
         <canvas id="Canvas4" width="100" height="100"></canvas>
-        
-        <div class='container'>
-        <h1>Optical Character Recognition</h1>
-            <canvas id="Canvas2" width="100" height="100"></canvas>
-            <br>
-            <button id='anal'>Analyze</button>
-            <button id='clear'>Clear</button>
-        </div>
-        <div id='result'> Draw a character in the canvas above and hit 'Analyze'. </div> 
-        <button id='compare'>Compare</button>
+        <div id='foo'></div>
+        <button id='anal'>Analyze</button>
+        <button id='clear'>Clear</button> 
+        <button id='compare'>Compare</button> 
 
         <script>
             var canvas0 = document.getElementById("Canvas0");  
@@ -66,43 +40,39 @@
             var canvas4 = document.getElementById("Canvas4");  
             var ctx4 = canvas4.getContext("2d");
 
+            var image = new Image();
+            image.src = "a.jpg";
+
             var matrix0=[],matrix1=[];
 
-            draw_char(ctx0,'O');
+            draw_char(ctx0,'V');
             matrix0 = analyze(ctx0);
             draw_matrix(ctx1,matrix0);
 
             init_board(canvas2,'#ddd');
+            //matrix = analyze(ctx0);
+            //draw_matrix(ctx1,matrix);
+
 
             $('#anal').click(function () {
                 ctx0.clearRect ( 0,0,100,100 );
-                var c,max=0,arr2=[],matrix=[],matrix1=[];
+                arr2=[];
+                var c,max=0;
+                matrix = [];
                 matrix1 = analyze(ctx2);
                 draw_matrix(ctx3,matrix1);
-                a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz123456789!@#$%^&*()~+=<>?';
+                a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxxyz123456789';
                 arr = a.split('');
                 for(i=0;i<arr.length;i++){
                     draw_char(ctx0,arr[i]);
                     matrix = analyze(ctx0);
                     ctx0.clearRect ( 0,0,100,100 );
                     a = compare(matrix,matrix1);
-                    if(a > max){max = a; c = arr[i]; }
-                    arr2.push([arr[i] , a] );
+                    if(a > max){max = a; c = arr[i][0]; };
+                    arr2.push(arr[i] , a );
                 }
-                h=0;
-                var v;
-                for(i=0;i<arr2.length;i++){
-                    if(arr2[i][1] > h && arr2[i][1] != max) {h = arr2[i][1]; v=arr2[i][0];}
-                }
-                s=0;
-                var t;
-                for(i=0;i<arr2.length;i++){
-                    if(arr2[i][1] > s && arr2[i][1] != h && arr2[i][1] != max ) {s = arr2[i][1]; t=arr2[i][0];}
-                }
-                console.log(c,max);
-                console.log(v,h);
-                document.getElementById('result').innerHTML = 'Probability of being '+c +' : '+ max + '<br>' +'Probability of being ' + v+' : '+h + '<br>' +'Probability of being ' + t+' : '+s;
-                //alert(c);
+                console.log(arr2);
+                alert(c);
             });
             $('#clear').click(function () {
                 
@@ -142,7 +112,7 @@
                         }
                     }
                 }
-                return parseFloat( ( (good/total)*(good2/total2) ).toFixed(2) );
+                return (good/total)*(good2/total2);
             }
 
             function init_board(canvas, fillColor) {
@@ -182,7 +152,7 @@
                     canvas.onmouseup = function(e) {
                         canvas.isDrawing = false;
                     };
-            }
+                }
 
             function draw_char(context,ch){
                 context.font = 'bolder 120px Arial';
@@ -231,11 +201,17 @@
                         //if (p[0] < 50){ matrix[ parseInt(x/10) ][ parseInt(y/10) ] = 1; }
                         if (p[3] > 50){ matrix[ parseInt(x/10) ][ parseInt(y/10) ] = 1; }  
                         //document.write(matrix);            
-                        //console.log(p[0] + " " + p[1] + ' '+' '+p[2]+' ' +p[3] +';\n');        
+                        console.log(p[0] + " " + p[1] + ' '+' '+p[2]+' ' +p[3] +';\n');        
                     }
                 }
                 return matrix;
             }
+
+            $(image).load(function(){
+                //draw_char(ctx0,'E');
+                //matrix = analyze(ctx0);
+                //draw_matrix(ctx1,matrix);
+            });
             
         </script>
     </body>  
@@ -243,6 +219,7 @@
 
 <!--
 
-+ 
++ Not able to get the image data
 
---> 
+
+-->    
