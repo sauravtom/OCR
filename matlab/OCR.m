@@ -70,6 +70,8 @@ for n=1:Ne
         % Letter concatenation
         word=[word letter];
 end
+
+%save word to result.txt
 fprintf(fid,'%s\n',word);
 fclose(fid);
 
