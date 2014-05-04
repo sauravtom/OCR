@@ -7,7 +7,7 @@ by Saurav Tomar
  
 <
 Source Code License
-and url
+and url: http://github.com/sauravtom/OCR
 >
 
 %}
