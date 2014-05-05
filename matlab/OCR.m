@@ -6,8 +6,9 @@ by Saurav Tomar
 (@sauravtom)
  
 <
-Source Code License
-and url: http://github.com/sauravtom/OCR
+Source Code released under [MIT License.](http://choosealicense.com/licenses/mit/) 
+
+Source Code url: http://github.com/sauravtom/OCR
 >
 
 %}
