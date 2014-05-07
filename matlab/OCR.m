@@ -76,6 +76,7 @@ end
 fprintf(fid,'%s\n',word);
 fclose(fid);
 
+
 %Open 'result.txt' file
 winopen('result.txt')
 clear all
